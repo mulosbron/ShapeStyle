@@ -1,0 +1,21 @@
+Model Performance Metrics
+==========================
+Accuracy: 0.8960
+Precision (Weighted): 0.8962
+Recall (Weighted): 0.8960
+F1-Score (Weighted): 0.8959
+Log Loss: 0.3301
+AUC Score (Weighted): 0.9884
+
+Classification Report:
+              precision    recall  f1-score   support
+
+       Heart       0.92      0.93      0.92       200
+      Oblong       0.93      0.93      0.93       200
+        Oval       0.89      0.84      0.87       200
+       Round       0.86      0.89      0.87       200
+      Square       0.89      0.90      0.89       200
+
+    accuracy                           0.90      1000
+   macro avg       0.90      0.90      0.90      1000
+weighted avg       0.90      0.90      0.90      1000

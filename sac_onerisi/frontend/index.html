@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Yüz Şekli Sınıflandırma</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        .upload-section {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+        }
+        .upload-section input[type="file"] {
+            display: none;
+        }
+        .upload-label {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: #fff;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+        .images-section {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+            width: 100%;
+            max-width: 1000px;
+        }
+        .image-container {
+            background-color: #fff;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 300px;
+        }
+        .image-container img {
+            max-width: 100%;
+            border-radius: 4px;
+        }
+        .submit-button {
+            padding: 10px 20px;
+            background-color: #28A745;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .submit-button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        .loading {
+            margin-top: 10px;
+            color: #555;
+        }
+        @media (max-width: 650px) {
+            .images-section {
+                flex-direction: column;
+                align-items: center;
+            }
+            .image-container {
+                width: 90%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Yüz Şekli Sınıflandırma</h1>
+    <div class="upload-section">
+        <label class="upload-label" for="fileInput">Görsel Seç</label>
+        <input type="file" id="fileInput" accept="image/*">
+        <br>
+        <button class="submit-button" id="uploadButton" disabled>Yükle ve Sınıflandır</button>
+        <div class="loading" id="loadingText" style="display: none;">İşlem Yapılıyor...</div>
+    </div>
+    <div class="images-section">
+        <div class="image-container">
+            <h3>Yüklenen Görsel</h3>
+            <img id="uploadedImage" src="#" alt="Yüklenen Görsel" style="display: none;">
+        </div>
+        <div class="image-container">
+            <h3>Sınıflandırma Sonucu</h3>
+            <img id="outputImage" src="#" alt="Sonuç Görseli" style="display: none;">
+        </div>
+    </div>
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const uploadButton = document.getElementById('uploadButton');
+        const uploadedImage = document.getElementById('uploadedImage');
+        const outputImage = document.getElementById('outputImage');
+        const loadingText = document.getElementById('loadingText');
+
+        let selectedFile = null;
+
+        fileInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file && file.type.startsWith('image/')) {
+                selectedFile = file;
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    uploadedImage.src = e.target.result;
+                    uploadedImage.style.display = 'block';
+                }
+                reader.readAsDataURL(file);
+                uploadButton.disabled = false;
+                outputImage.style.display = 'none';
+            } else {
+                uploadedImage.style.display = 'none';
+                uploadButton.disabled = true;
+                selectedFile = null;
+            }
+        });
+
+        uploadButton.addEventListener('click', () => {
+            if (!selectedFile) return;
+            const formData = new FormData();
+            formData.append('file', selectedFile);
+            uploadButton.disabled = true;
+            loadingText.style.display = 'block';
+            fetch('http://127.0.0.1:5000/upload', {  // Backend URL
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Sunucu hatası: ${response.statusText}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                loadingText.style.display = 'none';
+                uploadButton.disabled = false;
+                if (data.output_image) {
+                    outputImage.src = 'data:image/png;base64,' + data.output_image;
+                    outputImage.style.display = 'block';
+                } else if (data.error) {
+                    alert('Hata: ' + data.error);
+                }
+            })
+            .catch(error => {
+                loadingText.style.display = 'none';
+                uploadButton.disabled = false;
+                alert('Görsel işlenirken bir hata oluştu.');
+                console.error('Hata:', error);
+            });
+        });
+    </script>
+</body>
+</html>

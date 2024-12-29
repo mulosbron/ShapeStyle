@@ -1,169 +1,381 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8">
-    <title>Yüz Şekli Sınıflandırma</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f2f2f2;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
-        }
-        h1 {
-            color: #333;
-        }
-        .upload-section {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
-            width: 100%;
-            max-width: 500px;
-            text-align: center;
-        }
-        .upload-section input[type="file"] {
-            display: none;
-        }
-        .upload-label {
-            display: inline-block;
-            padding: 10px 20px;
-            background-color: #007BFF;
-            color: #fff;
-            border-radius: 4px;
-            cursor: pointer;
-            margin-bottom: 10px;
-        }
-        .images-section {
-            display: flex;
-            gap: 20px;
-            flex-wrap: wrap;
-            justify-content: center;
-            width: 100%;
-            max-width: 1000px;
-        }
-        .image-container {
-            background-color: #fff;
-            padding: 10px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            text-align: center;
-            width: 300px;
-        }
-        .image-container img {
-            max-width: 100%;
-            border-radius: 4px;
-        }
-        .submit-button {
-            padding: 10px 20px;
-            background-color: #28A745;
-            color: #fff;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        .submit-button:disabled {
-            background-color: #ccc;
-            cursor: not-allowed;
-        }
-        .loading {
-            margin-top: 10px;
-            color: #555;
-        }
-        @media (max-width: 650px) {
-            .images-section {
-                flex-direction: column;
-                align-items: center;
-            }
-            .image-container {
-                width: 90%;
-            }
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <title>Yüz Şekli Sınıflandırma</title>
+  <style>
+    /* Temel Sayfa Yerleşimi */
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f2f2f2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+    h1 {
+      margin-bottom: 20px;
+      color: #333;
+      text-align: center;
+    }
+
+    /* Yükleme Bölümü (Kamera ve Canvas) */
+    .upload-section {
+      width: 100%;
+      max-width: 400px;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    video, canvas {
+      width: 100%;
+      max-width: 100%;
+      height: auto;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      margin-bottom: 10px;
+    }
+
+    /* Butonlar */
+    .camera-button, .submit-button {
+      padding: 10px 20px;
+      background-color: #007BFF;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin: 5px;
+      transition: background-color 0.3s ease;
+    }
+    .camera-button:hover {
+      background-color: #0056b3;
+    }
+    .submit-button {
+      background-color: #28A745;
+    }
+    .submit-button:hover {
+      background-color: #218838;
+    }
+    .submit-button:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+
+    /* İşlem Aşaması Metni */
+    .loading {
+      margin-top: 10px;
+      color: #555;
+    }
+
+    /* Sonuç Bölümü */
+    .result-section {
+      width: 100%;
+      max-width: 700px;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+      text-align: center;
+      display: none; /* Başta gizli */
+    }
+    .result-section h2 {
+      margin-top: 0;
+      color: #444;
+    }
+    .result-image {
+      max-width: 100%;
+      border-radius: 4px;
+      margin-bottom: 20px;
+      border: 1px solid #eee;
+    }
+
+    .camera-button:disabled {
+      background-color: #ccc;   /* Arka plan rengini gri yap */
+      cursor: not-allowed;      /* Fare imlecini pasif göster */
+    }
+
+
+    /* Önerilen Saç Stilleri: flex ile yan yana diziyoruz */
+    .hair-styles {
+      display: flex;
+      gap: 20px; /* Görseller arasındaki boşluk */
+      flex-wrap: wrap; /* Taşma olursa bir alt satıra geçsin */
+      justify-content: center; /* Ortala */
+      list-style: none;
+      padding: 0;
+      margin: 0 auto;
+    }
+    .hair-style-item {
+      text-align: center;
+      width: 120px; /* Her bir stil kutusu genişliği */
+    }
+    .hair-style-item img {
+      max-width: 100%;
+      height: auto;
+      border: 1px solid #eee;
+      border-radius: 4px;
+      margin-bottom: 5px;
+      cursor: pointer; /* Tıklanabilir olduğunu belirtmek için */
+    }
+    .hair-style-item p {
+      margin: 0;
+      font-size: 14px;
+      color: #333;
+    }
+  </style>
 </head>
 <body>
-    <h1>Yüz Şekli Sınıflandırma</h1>
-    <div class="upload-section">
-        <label class="upload-label" for="fileInput">Görsel Seç</label>
-        <input type="file" id="fileInput" accept="image/*">
-        <br>
-        <button class="submit-button" id="uploadButton" disabled>Yükle ve Sınıflandır</button>
-        <div class="loading" id="loadingText" style="display: none;">İşlem Yapılıyor...</div>
-    </div>
-    <div class="images-section">
-        <div class="image-container">
-            <h3>Yüklenen Görsel</h3>
-            <img id="uploadedImage" src="#" alt="Yüklenen Görsel" style="display: none;">
-        </div>
-        <div class="image-container">
-            <h3>Sınıflandırma Sonucu</h3>
-            <img id="outputImage" src="#" alt="Sonuç Görseli" style="display: none;">
-        </div>
-    </div>
-    <script>
-        const fileInput = document.getElementById('fileInput');
-        const uploadButton = document.getElementById('uploadButton');
-        const uploadedImage = document.getElementById('uploadedImage');
-        const outputImage = document.getElementById('outputImage');
-        const loadingText = document.getElementById('loadingText');
+  <h1>Yüz Şekli Sınıflandırma</h1>
 
-        let selectedFile = null;
+  <!-- Kamera ve Yükleme Kısmı -->
+  <div class="upload-section">
+    <video id="video" autoplay></video>
+    <canvas id="canvas" style="display: none;"></canvas>
+    <button id="captureButton" class="camera-button">Resim Çek</button>
+    <button id="uploadButton" class="submit-button" disabled>Yükle ve Sınıflandır</button>
+    <div class="loading" id="loadingText" style="display: none;">İşlem Yapılıyor...</div>
+  </div>
 
-        fileInput.addEventListener('change', (event) => {
-            const file = event.target.files[0];
-            if (file && file.type.startsWith('image/')) {
-                selectedFile = file;
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    uploadedImage.src = e.target.result;
-                    uploadedImage.style.display = 'block';
-                }
-                reader.readAsDataURL(file);
-                uploadButton.disabled = false;
-                outputImage.style.display = 'none';
-            } else {
-                uploadedImage.style.display = 'none';
-                uploadButton.disabled = true;
-                selectedFile = null;
-            }
-        });
+  <!-- Sonuç Kısmı -->
+  <div class="result-section" id="resultSection">
+    <h2 id="faceShapeText"></h2>
+    <img id="resultImage" class="result-image" alt="Sonuç Görseli" />
+    <ul class="hair-styles" id="hairStylesList"></ul>
+  </div>
 
-        uploadButton.addEventListener('click', () => {
-            if (!selectedFile) return;
-            const formData = new FormData();
-            formData.append('file', selectedFile);
-            uploadButton.disabled = true;
-            loadingText.style.display = 'block';
-            fetch('http://127.0.0.1:5000/upload', {  // Backend URL
-                method: 'POST',
-                body: formData
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`Sunucu hatası: ${response.statusText}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                loadingText.style.display = 'none';
-                uploadButton.disabled = false;
-                if (data.output_image) {
-                    outputImage.src = 'data:image/png;base64,' + data.output_image;
-                    outputImage.style.display = 'block';
-                } else if (data.error) {
-                    alert('Hata: ' + data.error);
-                }
-            })
-            .catch(error => {
-                loadingText.style.display = 'none';
-                uploadButton.disabled = false;
-                alert('Görsel işlenirken bir hata oluştu.');
-                console.error('Hata:', error);
+  <script>
+    // Kameraya erişim
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+
+    // Butonlar
+    const captureButton = document.getElementById('captureButton');
+    const uploadButton = document.getElementById('uploadButton');
+    const loadingText = document.getElementById('loadingText');
+
+    // Sonuç bölümündeki elemanlar
+    const resultSection = document.getElementById('resultSection');
+    const faceShapeText = document.getElementById('faceShapeText');
+    const resultImage = document.getElementById('resultImage');
+    const hairStylesList = document.getElementById('hairStylesList');
+
+    // Upload butonu için cooldown kontrol değişkeni
+    let isUploadOnCooldown = false;
+
+    // Tarayıcıdan kamera izni isteme
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then(stream => {
+        video.srcObject = stream;
+      })
+      .catch(error => {
+        console.error("Kamera erişim hatası:", error);
+        alert("Kamera erişim hatası! Lütfen tarayıcı ayarlarını kontrol edin.");
+      });
+
+    /****************************************************************
+     *  3 SANİYELİK COOLDOWN (“Resim Çek” butonu)
+     ****************************************************************/
+    function startCaptureCooldown() {
+      let cooldown = 3; // 3 saniye
+      captureButton.disabled = true;
+      const originalText = "Resim Çek";
+
+      // Buton metnine (3s) gibi geri sayım gösteriyoruz
+      captureButton.innerText = `${originalText} (${cooldown}s)`;
+
+      const intervalId = setInterval(() => {
+        cooldown--;
+        if (cooldown <= 0) {
+          clearInterval(intervalId);
+          // Upload cooldown'da değilse "Resim Çek" butonunu yeniden etkinleştir
+          if (!isUploadOnCooldown) {
+            captureButton.disabled = false;
+          }
+          captureButton.innerText = originalText;
+        } else {
+          captureButton.innerText = `${originalText} (${cooldown}s)`;
+        }
+      }, 1000);
+    }
+
+    // "Resim Çek" butonuna tıklanınca
+    captureButton.addEventListener('click', () => {
+      // Canvas boyutunu video boyutuna ayarla
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      // Video görüntüsünü canvas'a çiz
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+      // Eğer upload butonu cooldown'da DEĞİLSE etkinleştir
+      if (!isUploadOnCooldown) {
+        uploadButton.disabled = false;
+      }
+
+      // 3 saniyelik cooldown başlat
+      startCaptureCooldown();
+    });
+
+    /****************************************************************
+     *  10 SANİYELİK COOLDOWN (“Yükle ve Sınıflandır” butonu)
+     ****************************************************************/
+    function startUploadCooldown() {
+      let cooldown = 10; // 10 saniye
+      const originalText = "Yükle ve Sınıflandır";
+
+      // "Resim Çek" butonunu da devre dışı bırakalım
+      captureButton.disabled = true;
+
+      // Buton metnine (10s) gibi geri sayım gösteriyoruz
+      uploadButton.innerText = `${originalText} (${cooldown}s)`;
+
+      const intervalId = setInterval(() => {
+        cooldown--;
+        if (cooldown <= 0) {
+          clearInterval(intervalId);
+          // Cooldown bittiğinde tekrar butonları aktif hale getirebiliriz
+          uploadButton.disabled = false;
+          captureButton.disabled = false;
+          uploadButton.innerText = originalText;
+          // Upload butonu cooldown devresini tamamladığı için
+          isUploadOnCooldown = false; 
+        } else {
+          uploadButton.innerText = `${originalText} (${cooldown}s)`;
+        }
+      }, 1000);
+    }
+
+    /**
+     * Önerilen saç stili görsellerini yüz şekline göre döndüren fonksiyon.
+     * Kendi klasör/dosya yapınıza göre düzenleyebilirsiniz.
+     */
+    function getHairStyles(faceShape) {
+      switch (faceShape) {
+        case "Oval":
+          return [
+            { name: "Pushed Back Long", img: "oval/pushed_back_long.png" },
+            { name: "Side Parted Short", img: "oval/side_parted_short.png" },
+            { name: "Undercut", img: "oval/undercut.png" },
+            { name: "Fringe Up", img: "oval/fringe_up.png" }
+          ];
+        case "Square":
+          return [
+            { name: "Crew",   img: "square/crew.png" },
+            { name: "Undercut",         img: "square/undercut.png" },
+            { name: "Faux Hawk",        img: "square/faux_hawk.png" },
+            { name: "Slicked Back Side Part", img: "square/slicked_back_side_part.png" }
+          ];
+        case "Round":
+          return [
+            { name: "Faux Hawk Shorter Sides",  img: "round/faux_hawk_shorter_sides.png" },
+            { name: "Undercut",   img: "round/undercut.png" },
+            { name: "Fringe Up",  img: "round/fringe_up.png" },
+            { name: "Quiff",      img: "round/quiff.png" }
+          ];
+        case "Oblong":
+          return [
+            { name: "Side Parted", img: "oblong/side_parted.png" },
+            { name: "Buzz Cut",    img: "oblong/buzz_cut.png" },
+            { name: "Fringe Up",   img: "oblong/fringe_up.png" },
+            { name: "Side Fringe", img: "oblong/side_fringe.png" }
+          ];
+        case "Heart":
+          return [
+            { name: "Pushed Back",       img: "heart/pushed_back.png" },
+            { name: "Side Parted Long",  img: "heart/side_parted_long.png" },
+            { name: "Undercut",          img: "heart/undercut.png" },
+            { name: "Long Fringe",       img: "heart/long_fringes.png" }
+          ];
+        default:
+          return [];
+      }
+    }
+
+    // "Yükle ve Sınıflandır" butonuna tıklanınca
+    uploadButton.addEventListener('click', () => {
+      loadingText.style.display = 'block';    // "İşlem Yapılıyor..." metnini göster
+      uploadButton.disabled = true;           // Butonu anında devre dışı bırak
+      isUploadOnCooldown = true;             // Upload cooldown başlasın
+
+      // 10 saniyelik cooldown başlat
+      startUploadCooldown();
+
+      // Canvas'tan Blob (PNG formatında) oluştur
+      canvas.toBlob(blob => {
+        const formData = new FormData();
+        formData.append("file", blob, "camera_capture.png");
+
+        // Flask sunucusuna gönder (URL'yi kendi backend adresiniz yapın)
+        fetch("http://127.0.0.1:5000/upload", {
+          method: "POST",
+          body: formData
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`Sunucu hatası: ${response.statusText}`);
+          }
+          return response.json();
+        })
+        .then(data => {
+          loadingText.style.display = 'none';
+
+          // Hata döndüyse
+          if (data.error) {
+            alert('Hata: ' + data.error);
+            return;
+          }
+
+          // Backend’den dönen veriler
+          const predictedLabel = data.predicted_label;
+          const outputImageData = data.output_image; // PNG base64
+
+          // Tahmini yüz şeklini yaz
+          faceShapeText.textContent = `Yüz Şekli: ${predictedLabel}`;
+
+          // İşlenmiş görseli (modelin ürettiği görsel) göster
+          resultImage.src = "data:image/png;base64," + outputImageData;
+
+          // Önerilen saç stillerini listele
+          const styles = getHairStyles(predictedLabel);
+          hairStylesList.innerHTML = "";
+
+          styles.forEach(styleObj => {
+            const li = document.createElement("li");
+            li.classList.add("hair-style-item");
+
+            const imgEl = document.createElement("img");
+            imgEl.src = styleObj.img;
+            imgEl.alt = styleObj.name;
+
+            // Stil görseline tıklanınca yönlendirme
+            imgEl.addEventListener('click', () => {
+              window.location.href = `onerilen.html?type=${predictedLabel}&style=${encodeURIComponent(styleObj.name)}`;
             });
+
+            const nameEl = document.createElement("p");
+            nameEl.textContent = styleObj.name;
+
+            li.appendChild(imgEl);
+            li.appendChild(nameEl);
+            hairStylesList.appendChild(li);
+          });
+
+          // Sonuç kutusunu göster
+          resultSection.style.display = "block";
+        })
+        .catch(error => {
+          loadingText.style.display = 'none';
+          alert('İşleme sırasında bir hata oluştu: ' + error.message);
+          console.error('Hata:', error);
         });
-    </script>
+      }, "image/png");
+    });
+  </script>
 </body>
 </html>

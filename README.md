@@ -86,17 +86,17 @@ Below are the visualizations generated during model evaluation. All images are r
 ## Confusion Matrices
 | Confusion Matrix (Counts) | Confusion Matrix (Normalized) |
 |----------------------------|------------------------------|
-| ![Confusion Matrix (Counts)](model/evaluation_results/confusion_matrix_counts.png){ width=400 } | ![Confusion Matrix (Normalized)](model/evaluation_results/confusion_matrix_normalized.png){ width=400 } |
+| ![Confusion Matrix (Counts)](model/evaluation_results/confusion_matrix_counts.png) | ![Confusion Matrix (Normalized)](model/evaluation_results/confusion_matrix_normalized.png) |
 
 ## Training & Validation Metrics
 | Log Loss | Validation Accuracy |
 |----------|---------------------|
-| ![Log Loss](model/evaluation_results/log_loss.png){ width=400 } | ![Validation Accuracy](model/evaluation_results/val_acc.png){ width=400 } |
+| ![Log Loss](model/evaluation_results/log_loss.png) | ![Validation Accuracy](model/evaluation_results/val_acc.png) |
 
 ## Precision-Recall and ROC Curves
 | Precision-Recall Curves | ROC Curves |
 |--------------------------|-----------|
-| ![Precision-Recall Curves](model/evaluation_results/precision_recall_curves.png){ width=400 } | ![ROC Curves](model/evaluation_results/roc_curves.png){ width=400 } |
+| ![Precision-Recall Curves](model/evaluation_results/precision_recall_curves.png) | ![ROC Curves](model/evaluation_results/roc_curves.png) |
 
 ---
 

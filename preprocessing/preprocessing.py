@@ -4,36 +4,34 @@ import numpy as np
 import cv2
 from skimage.filters import sobel
 from skimage.feature import canny
-from scipy import ndimage
 import random
-import tensorflow as tf
 from tensorflow.keras import utils
-import pandas as pd
-import seaborn as sns
 from joblib import dump  # Joblib'den dump fonksiyonunu doğrudan içe aktarın
-from sklearn.utils.class_weight import compute_class_weight
 from collections import Counter
 from mtcnn import MTCNN  # MTCNN kütüphanesini içe aktarın
 
 # Pillow'un kesilmiş (truncated) görüntüleri yüklemesine izin verme (Opsiyonel)
 from PIL import ImageFile
+
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 # Uyarıları bastırmak (isteğe bağlı)
 import warnings
+
 warnings.filterwarnings('ignore')
 
 # Yüz tespiti için MTCNN detektörünü başlatma
 detector = MTCNN()
 
+
 def extract_face(img, target_size=(224, 224)):
-    '''
+    """
     Bu fonksiyon, farklı görüntülerden yüzleri tespit eder ve
     1) Yüzün sınırlayıcı kutusunu bulur
     2) Yüzün üst ve alt sınırlarını biraz genişletir
     3) Kare şeklinde kırpar
     4) Modelleme için hedef boyuta yeniden boyutlandırır
-    '''
+    """
     # 1. Görüntüde yüzleri tespit etme
     results = detector.detect_faces(img)
     if not results:
@@ -63,10 +61,11 @@ def extract_face(img, target_size=(224, 224)):
     sqr_img = cv2.resize(new_face, target_size)
     return sqr_img
 
+
 def crop_and_resize(image, target_w=224, target_h=224):
-    '''
+    """
     Bu fonksiyon, görüntüyü hedef boyuta oranını koruyarak kırpar ve yeniden boyutlandırır
-    '''
+    """
     if image.ndim == 2:
         img_h, img_w = image.shape
     elif image.ndim == 3:
@@ -93,19 +92,21 @@ def crop_and_resize(image, target_w=224, target_h=224):
 
     return new_img
 
+
 def cvt_gabor(image):
-    '''
+    """
     Gabor filtresi uygulama fonksiyonu
-    '''
+    """
     # Gabor filtresi parametreleri
     gabor_kernel = cv2.getGaborKernel((21, 21), 8.0, np.pi / 4, 10.0, 0.5, 0, ktype=cv2.CV_32F)
     filtered_img = cv2.filter2D(image, cv2.CV_8UC3, gabor_kernel)
     return filtered_img
 
+
 def create_data_files(directory, array, type=None):
-    '''
+    """
     Bu fonksiyon, verilen dizindeki görüntüleri okur ve eğitim & test veri setleri oluşturur
-    '''
+    """
     i = 0
     for category in categories:
         path = os.path.join(directory, category)  # Görüntü dizinine yol
@@ -170,10 +171,11 @@ def create_data_files(directory, array, type=None):
         if i % 200 == 0 and i > 0:
             print(f"İşlenen görüntüler: {i} / {total_images}")
 
+
 def show_img(num, img_array, title, ncols=1):
-    '''
+    """
     Bu fonksiyon, bir görüntü dizisinden görüntüleri gösterir
-    '''
+    """
     nrows = int(np.ceil(num / ncols))
     fig, ax = plt.subplots(nrows, ncols, figsize=(ncols * 4, nrows * 4))
     fig.suptitle(title, size=20)
@@ -194,10 +196,11 @@ def show_img(num, img_array, title, ncols=1):
     plt.tight_layout()
     plt.show()
 
+
 def print_summary(X_train, X_test, y_train, y_test):
-    '''
+    """
     Veri setlerinin özet bilgilerini yazdırır
-    '''
+    """
     print(f'\nEğitim Veri Seti:\n')
     print(f'Özellik Şekli: {X_train.shape}')
     print(f'Etiket Şekli: {y_train.shape}')
@@ -213,10 +216,11 @@ def print_summary(X_train, X_test, y_train, y_test):
     print(f'Maksimum Piksel Değeri: {np.amax(X_test)}')
     print('\n--------------------------------------\n')
 
+
 def train_test_prep(training_data_array, testing_data_array):
-    '''
+    """
     Veri setlerini karıştırır ve X_train, X_test, y_train, y_test olarak ayırır
-    '''
+    """
     # Görüntüleri karıştırarak sınıfları rastgele dağıtma
     random.shuffle(training_data_array)
     random.shuffle(testing_data_array)
@@ -248,19 +252,21 @@ def train_test_prep(training_data_array, testing_data_array):
 
     return (X_train, X_test, y_train, y_test)
 
+
 def joblib_out(X_train, X_test, y_train, y_test, version, data_path):
-    '''
+    """
     Modelleme için verileri joblib olarak kaydeder
-    '''
+    """
     dump(X_train, os.path.join(data_path, f'X_train_{version}.joblib'), compress=True)
     dump(y_train, os.path.join(data_path, f'y_train_{version}.joblib'), compress=True)
     dump(X_test, os.path.join(data_path, f'X_test_{version}.joblib'), compress=True)
     dump(y_test, os.path.join(data_path, f'y_test_{version}.joblib'), compress=True)
 
+
 def display_preprocessed_images():
-    '''
+    """
     Eğitim setinizden her kategoriden birkaç örnek görüntü seçip işleyerek gösterir
-    '''
+    """
     samples_per_category = 2  # Her kategoriden kaç örnek görüntü göstermek istediğinizi belirleyin
     examples = []
 
@@ -346,6 +352,7 @@ def display_preprocessed_images():
     plt.figtext(x=0.7, y=0.89, s="Long Portrait", fontsize=15)
     plt.figtext(x=0.8, y=0.89, s="Wide Landscape", fontsize=15)
     plt.show()
+
 
 # --- Başlangıç Ayarları ---
 

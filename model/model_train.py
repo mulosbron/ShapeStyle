@@ -48,9 +48,9 @@ if os.path.exists(model_path):
 else:
     print("Model bulunamadı. Yeni model oluşturuluyor...")
     x = base_model.output
-    x = Dense(1028, activation="relu", name="fc1")(x)
+    x = Dense(1028, activation="relu")(x)
     x = Dropout(0.5)(x)
-    output = Dense(num_classes, activation="softmax", name="classifier")(x)
+    output = Dense(num_classes, activation="softmax")(x)
     model = Model(inputs=base_model.input, outputs=output)
     for layer in base_model.layers:
         layer.trainable = False

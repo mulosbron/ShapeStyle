@@ -11,10 +11,11 @@ data_path = os.path.join(base_dir, 'pickles')  # Joblib dosyalarının bulunduğ
 categories = ['Heart', 'Oblong', 'Oval', 'Round', 'Square']
 label_map = {0: 'Heart', 1: 'Oblong', 2: 'Oval', 3: 'Round', 4: 'Square'}
 
+
 def load_data(version):
-    '''
+    """
     Belirtilen versiyona ait joblib dosyalarını yükler.
-    '''
+    """
     try:
         X_train = joblib.load(os.path.join(data_path, f'X_train_{version}.joblib'))
         y_train = joblib.load(os.path.join(data_path, f'y_train_{version}.joblib'))
@@ -26,10 +27,11 @@ def load_data(version):
         print(f"Dosya bulunamadı: {e}")
         return None, None, None, None
 
+
 def display_random_images(X, y, num_images=5):
-    '''
+    """
     Verilen X ve y veri setlerinden rastgele num_images kadar görüntü seçer ve gösterir.
-    '''
+    """
     if X is None or y is None:
         print("Veri seti boş. Görüntü gösterilemiyor.")
         return
@@ -49,7 +51,7 @@ def display_random_images(X, y, num_images=5):
     # Görüntüleri gösterme
     plt.figure(figsize=(15, 3))
     for i in range(num_images):
-        plt.subplot(1, num_images, i+1)
+        plt.subplot(1, num_images, i + 1)
         img = selected_images[i]
         label = label_map.get(selected_labels[i], 'Unknown')
 
@@ -59,7 +61,7 @@ def display_random_images(X, y, num_images=5):
         elif img.ndim == 3:
             plt.imshow(img)
         else:
-            print(f"Görüntü {i+1} boyutunda desteklenmiyor: {img.shape}")
+            print(f"Görüntü {i + 1} boyutunda desteklenmiyor: {img.shape}")
             continue
 
         plt.title(label)
@@ -68,10 +70,11 @@ def display_random_images(X, y, num_images=5):
     plt.tight_layout()
     plt.show()
 
+
 def main():
-    '''
+    """
     Ana fonksiyon: Kullanıcının seçtiği versiyonu yükler ve rastgele 5 görüntüyü gösterir.
-    '''
+    """
     # Kullanıcıdan versiyon seçmesini isteyin
     print("Hangi veri setinden görüntü göstermek istersiniz?")
     print("1. Aspect Ratio ('apr')")
@@ -103,6 +106,7 @@ def main():
 
     # Rastgele 5 görüntüyü gösterme
     display_random_images(X, y, num_images=5)
+
 
 if __name__ == "__main__":
     main()

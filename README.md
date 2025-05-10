@@ -1,106 +1,95 @@
-# SUMMARY
-This AI-powered application analyzes the uploaded photos of users to determine their face shapes and provides personalized hairstyle recommendations.
-In this way, users can easily find the most suitable hairstyle for their face shape. The system examines various features of the face to classify the face shape and matches it with predefined hairstyles.
-
-This project aims to accelerate users' decision-making processes in hairstyle selection and help them make the right choice.
-
----
-
-# SYSTEM WORKFLOW  
-1. Take a photo using the system's camera.  
-
-![Step 1: Capture a Photo](sac_onerisi/1.jpg)
-
-2. Analyze your head structure and show which head shape you have.  
-
-![Step 2: Face Shape Prediction](sac_onerisi/2.jpg)
-
-3. Present you with pre-prepared hairstyles based on your head shape.  
-
-![Step 3: Suggested Hairstyles - Oval Face Shape](sac_onerisi/3.jpg)
-
-4. Choose the most suitable one for yourself and tell your hairdresser!  
-
----
-
-# TECHNOLOGIES  
-
-## Data Processing  
-- joblib  
-- pickle  
-- numpy  
-- opencv  
-
-## Face Detection  
-- MTCNN  
-
-## Web  
-- Python Flask  
-- HTML & CSS  
-- JavaScript  
-
-## Model  
-- VGGFace  
-- Keras (v2.2.4)  
-- Tensorflow (v1.14.0)  
-
-**Deep Learning → Transfer Learning**
-
----
-
-# DATASET
-This dataset consists of a total of 5000 images of celebrities categorized by face shapes from all around the world: Heart, Oblong, Oval, Round, and Square.  
-
-Each category contains 1000 images.  
-The Training Set for each category includes 800 images, while the Test Set includes 200 images.  
-
----
-
-# MODEL PERFORMANCE METRICS
+# ShapeStyle
 
 ## Overview
-This section provides detailed performance metrics for the model, including accuracy, precision, recall, F1-score, log loss, and AUC score. Additionally, the classification report offers insights into the performance of each class.
+An AI-powered web application that analyzes user photos to determine face shapes and provides personalized hairstyle recommendations. Using deep learning and transfer learning techniques, the system classifies faces into five categories (Heart, Oblong, Oval, Round, Square) and suggests optimal hairstyles for each shape.
 
-## Metrics
-- **Accuracy**: 0.8960
-- **Precision (Weighted)**: 0.8962
-- **Recall (Weighted)**: 0.8960
-- **F1-Score (Weighted)**: 0.8959
-- **Log Loss**: 0.3301
-- **AUC Score (Weighted)**: 0.9884
+## Purpose
+To help users find the most suitable hairstyle for their face shape through automated facial analysis. The application aims to accelerate decision-making in hairstyle selection and ensure users make the right choice by matching their facial features with predefined hairstyle recommendations.
 
-## Classification Report
-| Class     | Precision | Recall | F1-Score | Support |
-|-----------|-----------|--------|----------|---------|
-| Heart     | 0.92      | 0.93   | 0.92     | 200     |
-| Oblong    | 0.93      | 0.93   | 0.93     | 200     |
-| Oval      | 0.89      | 0.84   | 0.87     | 200     |
-| Round     | 0.86      | 0.89   | 0.87     | 200     |
-| Square    | 0.89      | 0.90   | 0.89     | 200     |
+### Key Objectives:
+- Accurately classify face shapes using computer vision
+- Provide personalized hairstyle recommendations
+- Create an intuitive web interface for real-time analysis
+- Achieve high accuracy in facial shape detection
 
----
+## Scope
 
-# VISUALIZATIONS
-Below are the visualizations generated during model evaluation. All images are resized to maintain uniformity.
+### Technology Stack:
+- **Deep Learning**: VGGFace, Keras 2.2.4, TensorFlow 1.14.0
+- **Face Detection**: MTCNN
+- **Web Development**: Python Flask, HTML/CSS, JavaScript
+- **Data Processing**: NumPy, OpenCV, joblib, pickle
+- **Transfer Learning**: Pre-trained VGG16 architecture
 
-## Confusion Matrices
-| Confusion Matrix (Counts) | Confusion Matrix (Normalized) |
-|----------------------------|------------------------------|
-| ![Confusion Matrix (Counts)](model/evaluation_results/confusion_matrix_counts.png) | ![Confusion Matrix (Normalized)](model/evaluation_results/confusion_matrix_normalized.png) |
+### Project Features:
+- Real-time camera capture for face analysis
+- 5-class face shape classification (Heart, Oblong, Oval, Round, Square)
+- Personalized hairstyle recommendations with visual previews
+- Interactive web interface with user-friendly design
+- Model performance metrics and visualization tools
 
-## Training & Validation Metrics
-| Log Loss | Validation Accuracy |
-|----------|---------------------|
-| ![Log Loss](model/evaluation_results/log_loss.png) | ![Validation Accuracy](model/evaluation_results/val_acc.png) |
+## Implementation
 
-## Precision-Recall and ROC Curves
-| Precision-Recall Curves | ROC Curves |
-|--------------------------|-----------|
-| ![Precision-Recall Curves](model/evaluation_results/precision_recall_curves.png) | ![ROC Curves](model/evaluation_results/roc_curves.png) |
+### Project Structure:
+```
+ShapeStyle/
+├── model/
+│   ├── face_shape_model_vgg16_rgb.h5    # Trained model
+│   ├── evaluation_results/               # Performance metrics and graphs
+│   ├── input_imgs/                       # Test images
+│   ├── output_results/                   # Prediction results
+│   ├── model_train.py                    # Model training script
+│   ├── model_test.py                     # Model testing script
+│   └── model_degerlendirme.py           # Model evaluation script
+├── preprocessing/
+│   ├── preprocessing.py                  # Data preprocessing script
+│   └── preprocessing_control.py          # Data validation script
+├── sac_onerisi/
+│   ├── backend/
+│   │   └── api.py                       # Flask API server
+│   └── frontend/
+│       ├── index.html                   # Main interface
+│       ├── onerilen.html                # Hairstyle recommendations
+│       └── [face_shape_folders]/        # Hairstyle images by face shape
+└── requirements.txt
+```
 
----
+### System Workflow:
+1. **Capture Photo**: User takes a photo using the system's camera
+2. **Face Analysis**: MTCNN detects face and VGGFace analyzes facial structure
+3. **Shape Classification**: Model predicts face shape with confidence scores
+4. **Recommendations**: System displays personalized hairstyle suggestions
+5. **Selection**: User selects preferred style for hairdresser reference
 
-# RESOURCES
+### Model Performance:
+- **Accuracy**: 89.60%
+- **Precision (Weighted)**: 89.62%
+- **Recall (Weighted)**: 89.60%
+- **F1-Score (Weighted)**: 89.59%
+- **AUC Score (Weighted)**: 98.84%
 
-- [VGGFace](https://github.com/rcmalli/keras-vggface)
-- [Face Shape Dataset](https://www.kaggle.com/datasets/niten19/face-shape-dataset)  
+### Classification Report:
+| Face Shape | Precision | Recall | F1-Score | Support |
+|------------|-----------|---------|----------|---------|
+| Heart      | 0.92      | 0.93    | 0.92     | 200     |
+| Oblong     | 0.93      | 0.93    | 0.93     | 200     |
+| Oval       | 0.89      | 0.84    | 0.87     | 200     |
+| Round      | 0.86      | 0.89    | 0.87     | 200     |
+| Square     | 0.89      | 0.90    | 0.89     | 200     |
+
+## Screenshots
+
+### System Workflow
+<img src="sac_onerisi/1.jpg" width="400" alt="Step 1: Capture Photo">
+<img src="sac_onerisi/2.jpg" width="400" alt="Step 2: Face Shape Prediction">
+<img src="sac_onerisi/3.jpg" width="400" alt="Step 3: Hairstyle Recommendations">
+
+### Model Performance Visualizations
+<img src="model/evaluation_results/confusion_matrix_counts.png" width="400" alt="Confusion Matrix">
+<img src="model/evaluation_results/roc_curves.png" width="400" alt="ROC Curves">
+
+### Dataset:
+- 5,000 celebrity images categorized by face shapes
+- 1,000 images per category (Heart, Oblong, Oval, Round, Square)
+- Training set: 800 images per category
+- Test set: 200 images per category

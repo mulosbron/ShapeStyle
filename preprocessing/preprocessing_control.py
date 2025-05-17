@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import random
 
 # --- Ayarlar ---
-base_dir = '/FaceShape Dataset'  # Doğru yol
+base_dir = '../FaceShape Dataset'  # Doğru yol
 data_path = os.path.join(base_dir, 'pickles')  # Joblib dosyalarının bulunduğu yol
 
 categories = ['Heart', 'Oblong', 'Oval', 'Round', 'Square']
@@ -21,10 +21,10 @@ def load_data(version):
         y_train = joblib.load(os.path.join(data_path, f'y_train_{version}.joblib'))
         X_test = joblib.load(os.path.join(data_path, f'X_test_{version}.joblib'))
         y_test = joblib.load(os.path.join(data_path, f'y_test_{version}.joblib'))
-        print(f"{version} verileri başarıyla yüklendi.")
+        print(f"{version} data loaded successfully.")
         return X_train, y_train, X_test, y_test
     except FileNotFoundError as e:
-        print(f"Dosya bulunamadı: {e}")
+        print(f"File not found: {e}")
         return None, None, None, None
 
 
@@ -33,12 +33,12 @@ def display_random_images(X, y, num_images=5):
     Verilen X ve y veri setlerinden rastgele num_images kadar görüntü seçer ve gösterir.
     """
     if X is None or y is None:
-        print("Veri seti boş. Görüntü gösterilemiyor.")
+        print("Dataset is empty. Cannot display images.")
         return
 
     total_images = X.shape[0]
     if total_images < num_images:
-        print(f"Veri setinde sadece {total_images} görüntü var. {num_images} görüntü gösterilemiyor.")
+        print(f"Dataset has only {total_images} images. Cannot display {num_images} images.")
         num_images = total_images
 
     # Rastgele indeksler seçme
@@ -61,7 +61,7 @@ def display_random_images(X, y, num_images=5):
         elif img.ndim == 3:
             plt.imshow(img)
         else:
-            print(f"Görüntü {i + 1} boyutunda desteklenmiyor: {img.shape}")
+            print(f"Image {i + 1} dimension not supported: {img.shape}")
             continue
 
         plt.title(label)
@@ -76,12 +76,12 @@ def main():
     Ana fonksiyon: Kullanıcının seçtiği versiyonu yükler ve rastgele 5 görüntüyü gösterir.
     """
     # Kullanıcıdan versiyon seçmesini isteyin
-    print("Hangi veri setinden görüntü göstermek istersiniz?")
+    print("Which dataset would you like to display images from?")
     print("1. Aspect Ratio ('apr')")
     print("2. Grayscale ('gray')")
     print("3. RGB ('rgb')")
 
-    choice = input("Seçiminizi yapın (1/2/3): ")
+    choice = input("Make your choice (1/2/3): ")
 
     if choice == '1':
         version = 'apr'
@@ -90,14 +90,14 @@ def main():
     elif choice == '3':
         version = 'rgb'
     else:
-        print("Geçersiz seçim. Program sonlandırılıyor.")
+        print("Invalid choice. Program terminating.")
         return
 
     # Veriyi yükleme
     X_train, y_train, X_test, y_test = load_data(version)
 
     if X_train is None:
-        print("Veri yüklenemedi. Program sonlandırılıyor.")
+        print("Data could not be loaded. Program terminating.")
         return
 
     # Hem eğitim hem de test verilerini birleştirme

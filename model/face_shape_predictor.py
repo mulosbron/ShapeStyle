@@ -54,7 +54,7 @@ def crop_and_resize(image, target_w=224, target_h=224):
 def predict_face_shape(image_path, model, detector, label_map):
     img = cv2.imread(image_path)
     if img is None:
-        raise ValueError(f"Görsel yüklenemedi: {image_path}")
+        raise ValueError(f"Image could not be loaded: {image_path}")
     processed_img = extract_face(img, detector)
     rgb_img = cv2.cvtColor(processed_img, cv2.COLOR_BGR2RGB)
     normalized_img = rgb_img.astype('float32') / 255.0
@@ -71,7 +71,7 @@ def plot_and_save(image, label, conf, all_confidences, label_map, save_path):
 
     plt.subplot(1, 2, 1)
     plt.imshow(image)
-    plt.title(f"Tahmin Edilen Yüz Şekli: {label} ({conf * 100:.2f}% Doğruluk)")
+    plt.title(f"Predicted Face Shape: {label} ({conf * 100:.2f}% Confidence)")
     plt.axis('off')
 
     plt.subplot(1, 2, 2)
@@ -81,9 +81,9 @@ def plot_and_save(image, label, conf, all_confidences, label_map, save_path):
     predicted_index = list(label_map.keys())[list(label_map.values()).index(label)]
     bar_colors[predicted_index] = 'blue'
     plt.bar(classes, confidences, color=bar_colors)
-    plt.xlabel('Yüz Şekli Sınıfları')
-    plt.ylabel('Doğruluk (%)')
-    plt.title('Yüz Şekli Tahminleri')
+    plt.xlabel('Face Shape Classes')
+    plt.ylabel('Confidence (%)')
+    plt.title('Face Shape Predictions')
     plt.ylim(0, 105)
 
     for i, v in enumerate(confidences):
@@ -95,9 +95,9 @@ def plot_and_save(image, label, conf, all_confidences, label_map, save_path):
 
 
 if __name__ == "__main__":
-    input_folder = r"C:\Users\duggy\OneDrive\Belgeler\Github\AIProject\model\input_imgs"
-    output_folder = r"C:\Users\duggy\OneDrive\Belgeler\Github\AIProject\model\output_results"
-    model_path = r"C:\Users\duggy\OneDrive\Belgeler\Github\AIProject\model\face_shape_model_vgg16_rgb.h5"
+    input_folder = "../input_imgs"
+    output_folder = "../output_results"
+    model_path = "face_shape_model_vgg16_rgb.h5"
     label_map = {0: 'Heart', 1: 'Oblong', 2: 'Oval', 3: 'Round', 4: 'Square'}
 
     if not os.path.exists(output_folder):
@@ -116,12 +116,12 @@ if __name__ == "__main__":
         image_path = os.path.join(input_folder, filename)
         try:
             label, conf, all_confidences, rgb_img = predict_face_shape(image_path, model, detector, label_map)
-            print(f"{filename}: {label} ({conf * 100:.2f}% doğruluk)")
+            print(f"{filename}: {label} ({conf * 100:.2f}% confidence)")
             for idx, confidence in enumerate(all_confidences):
                 print(f"  {label_map[idx]}: {confidence * 100:.2f}%")
             output_filename = os.path.splitext(filename)[0] + "_prediction.png"
             output_plot_path = os.path.join(output_folder, output_filename)
             plot_and_save(rgb_img, label, conf, all_confidences, label_map, output_plot_path)
-            print(f"  Tahmin sonucu görseli kaydedildi: {output_plot_path}\n")
+            print(f"  Prediction result image saved: {output_plot_path}\n")
         except Exception as e:
-            print(f"{filename}: Hata: {e}\n")
+            print(f"{filename}: Error: {e}\n")

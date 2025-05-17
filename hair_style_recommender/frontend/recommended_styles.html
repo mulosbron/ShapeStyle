@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Saç Tipi Önerileri</title>
+  <title>Recommended Hair Styles</title>
   <style>
     /* Genel stil */
     body {
@@ -52,19 +52,19 @@
   </style>
 </head>
 <body>
-  <h1>Önerilen Saç Tipi</h1>
+  <h1>Recommended Hair Style</h1>
   <div id="hairStyleSection">
-    <h2 class="hair-style-title" id="hairStyleTitle">Saç Tipi</h2>
+    <h2 class="hair-style-title" id="hairStyleTitle">Hair Style</h2>
     <div class="image-gallery" id="imageGallery">
       <!-- Görseller buraya eklenecek -->
     </div>
-    <a class="back-link" href="index.html">Geri Dön</a>
+    <a class="back-link" href="face_shape_classifier.html">Back</a>
   </div>
 
   <script>
     // URL'den saç tipi bilgisini al
     const queryParams = new URLSearchParams(window.location.search);
-    const hairType = queryParams.get("type") || "Bilinmeyen"; 
+    const hairType = queryParams.get("type") || "Unknown"; 
     const selectedStyleName = queryParams.get("style") || "";
 
     // Saç tipi başlığını güncelle
@@ -100,7 +100,7 @@
     images.forEach((imgFile) => {
       const imgElement = document.createElement("img");
       imgElement.src = `${imageFolder}${styleFolder}/${imgFile}`;
-      imgElement.alt = `${hairType} Saç Önerisi`;
+      imgElement.alt = `${hairType} Hair Style Recommendation`;
       imageGallery.appendChild(imgElement);
     });
   </script>

@@ -93,8 +93,8 @@ def evaluate_model(model, X_test, y_test, label_map, output_folder):
     plt.figure(figsize=(10, 8))
     sns.heatmap(cm, annot=True, fmt='d', xticklabels=list(label_map.values()), yticklabels=list(label_map.values()),
                 cmap='Blues')
-    plt.ylabel('Gerçek Sınıf')
-    plt.xlabel('Tahmin Edilen Sınıf')
+    plt.ylabel('True Class')
+    plt.xlabel('Predicted Class')
     plt.title('Confusion Matrix - Counts')
     plt.savefig(os.path.join(output_folder, 'confusion_matrix_counts.png'))
     plt.close()
@@ -102,8 +102,8 @@ def evaluate_model(model, X_test, y_test, label_map, output_folder):
     plt.figure(figsize=(10, 8))
     sns.heatmap(cm_normalized, annot=True, fmt='.2f', xticklabels=list(label_map.values()),
                 yticklabels=list(label_map.values()), cmap='Blues')
-    plt.ylabel('Gerçek Sınıf')
-    plt.xlabel('Tahmin Edilen Sınıf')
+    plt.ylabel('True Class')
+    plt.xlabel('Predicted Class')
     plt.title('Confusion Matrix - Normalized')
     plt.savefig(os.path.join(output_folder, 'confusion_matrix_normalized.png'))
     plt.close()
@@ -181,14 +181,14 @@ def plot_metrics(history, output_folder):
 
 
 if __name__ == "__main__":
-    data_path = r"C:\Users\duggy\OneDrive\Belgeler\Github\AIProject\FaceShape Dataset\pickles"
-    model_path = r"C:\Users\duggy\OneDrive\Belgeler\Github\AIProject\model\face_shape_model_vgg16_rgb.h5"
-    output_folder = r"C:\Users\duggy\OneDrive\Belgeler\Github\AIProject\model\evaluation_results"
+    data_path = "../FaceShape Dataset/pickles"
+    model_path = "face_shape_model_vgg16_rgb.h5"
+    output_folder = "../evaluation_results"
     label_map = {0: 'Heart', 1: 'Oblong', 2: 'Oval', 3: 'Round', 4: 'Square'}
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
     X_test_rgb, y_test_rgb = load_data(data_path)
     if not os.path.exists(model_path):
-        raise FileNotFoundError(f"Model dosyası bulunamadı: {model_path}")
+        raise FileNotFoundError(f"Model file not found: {model_path}")
     model = load_model(model_path)
     evaluate_model(model, X_test_rgb, y_test_rgb, label_map, output_folder)

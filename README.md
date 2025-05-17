@@ -6,12 +6,6 @@ An AI-powered web application that analyzes user photos to determine face shapes
 ## Purpose
 To help users find the most suitable hairstyle for their face shape through automated facial analysis. The application aims to accelerate decision-making in hairstyle selection and ensure users make the right choice by matching their facial features with predefined hairstyle recommendations.
 
-### Key Objectives:
-- Accurately classify face shapes using computer vision
-- Provide personalized hairstyle recommendations
-- Create an intuitive web interface for real-time analysis
-- Achieve high accuracy in facial shape detection
-
 ## Scope
 
 ### Technology Stack:
@@ -20,13 +14,6 @@ To help users find the most suitable hairstyle for their face shape through auto
 - **Web Development**: Python Flask, HTML/CSS, JavaScript
 - **Data Processing**: NumPy, OpenCV, joblib, pickle
 - **Transfer Learning**: Pre-trained VGG16 architecture
-
-### Project Features:
-- Real-time camera capture for face analysis
-- 5-class face shape classification (Heart, Oblong, Oval, Round, Square)
-- Personalized hairstyle recommendations with visual previews
-- Interactive web interface with user-friendly design
-- Model performance metrics and visualization tools
 
 ## Implementation
 
@@ -38,28 +25,21 @@ ShapeStyle/
 │   ├── evaluation_results/               # Performance metrics and graphs
 │   ├── input_imgs/                       # Test images
 │   ├── output_results/                   # Prediction results
-│   ├── model_train.py                    # Model training script
-│   ├── model_test.py                     # Model testing script
-│   └── model_degerlendirme.py           # Model evaluation script
+│   ├── face_shape_trainer.py                    # Model training script
+│   ├── face_shape_predictor.py                     # Model testing script
+│   └── face_shape_evaluator.py           # Model evaluation script
 ├── preprocessing/
 │   ├── preprocessing.py                  # Data preprocessing script
 │   └── preprocessing_control.py          # Data validation script
-├── sac_onerisi/
+├── hair_style_recommender/
 │   ├── backend/
 │   │   └── api.py                       # Flask API server
 │   └── frontend/
-│       ├── index.html                   # Main interface
-│       ├── onerilen.html                # Hairstyle recommendations
+│       ├── face_shape_classifier.html   # Main interface
+│       ├── recommended_styles.html      # Hairstyle recommendations
 │       └── [face_shape_folders]/        # Hairstyle images by face shape
 └── requirements.txt
 ```
-
-### System Workflow:
-1. **Capture Photo**: User takes a photo using the system's camera
-2. **Face Analysis**: MTCNN detects face and VGGFace analyzes facial structure
-3. **Shape Classification**: Model predicts face shape with confidence scores
-4. **Recommendations**: System displays personalized hairstyle suggestions
-5. **Selection**: User selects preferred style for hairdresser reference
 
 ### Model Performance:
 - **Accuracy**: 89.60%
@@ -80,9 +60,9 @@ ShapeStyle/
 ## Screenshots
 
 ### System Workflow
-<img src="sac_onerisi/1.jpg" width="400" alt="Step 1: Capture Photo">
-<img src="sac_onerisi/2.jpg" width="400" alt="Step 2: Face Shape Prediction">
-<img src="sac_onerisi/3.jpg" width="400" alt="Step 3: Hairstyle Recommendations">
+<img src="hair_style_recommoender/1.jpg" width="400" alt="Step 1: Capture Photo">
+<img src="hair_style_recommoender/2.jpg" width="400" alt="Step 2: Face Shape Prediction">
+<img src="hair_style_recommoender/3.jpg" width="400" alt="Step 3: Hairstyle Recommendations">
 
 ### Model Performance Visualizations
 <img src="model/evaluation_results/confusion_matrix_counts.png" width="400" alt="Confusion Matrix">

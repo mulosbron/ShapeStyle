@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Yüz Şekli Sınıflandırma</title>
+  <title>Face Shape Classification</title>
   <style>
     /* Temel Sayfa Yerleşimi */
     body {
@@ -131,21 +131,21 @@
   </style>
 </head>
 <body>
-  <h1>Yüz Şekli Sınıflandırma</h1>
+  <h1>Face Shape Classification</h1>
 
   <!-- Kamera ve Yükleme Kısmı -->
   <div class="upload-section">
     <video id="video" autoplay></video>
     <canvas id="canvas" style="display: none;"></canvas>
-    <button id="captureButton" class="camera-button">Resim Çek</button>
-    <button id="uploadButton" class="submit-button" disabled>Yükle ve Sınıflandır</button>
-    <div class="loading" id="loadingText" style="display: none;">İşlem Yapılıyor...</div>
+    <button id="captureButton" class="camera-button">Capture Image</button>
+    <button id="uploadButton" class="submit-button" disabled>Upload and Classify</button>
+    <div class="loading" id="loadingText" style="display: none;">Processing...</div>
   </div>
 
   <!-- Sonuç Kısmı -->
   <div class="result-section" id="resultSection">
     <h2 id="faceShapeText"></h2>
-    <img id="resultImage" class="result-image" alt="Sonuç Görseli" />
+    <img id="resultImage" class="result-image" alt="Result Image" />
     <ul class="hair-styles" id="hairStylesList"></ul>
   </div>
 
@@ -175,17 +175,17 @@
         video.srcObject = stream;
       })
       .catch(error => {
-        console.error("Kamera erişim hatası:", error);
-        alert("Kamera erişim hatası! Lütfen tarayıcı ayarlarını kontrol edin.");
+        console.error("Camera access error:", error);
+        alert("Camera access error! Please check your browser settings.");
       });
 
     /****************************************************************
-     *  3 SANİYELİK COOLDOWN (“Resim Çek” butonu)
+     *  3 SANİYELİK COOLDOWN (“Capture Image” butonu)
      ****************************************************************/
     function startCaptureCooldown() {
       let cooldown = 3; // 3 saniye
       captureButton.disabled = true;
-      const originalText = "Resim Çek";
+      const originalText = "Capture Image";
 
       // Buton metnine (3s) gibi geri sayım gösteriyoruz
       captureButton.innerText = `${originalText} (${cooldown}s)`;
@@ -194,7 +194,7 @@
         cooldown--;
         if (cooldown <= 0) {
           clearInterval(intervalId);
-          // Upload cooldown'da değilse "Resim Çek" butonunu yeniden etkinleştir
+          // Upload cooldown'da değilse "Capture Image" butonunu yeniden etkinleştir
           if (!isUploadOnCooldown) {
             captureButton.disabled = false;
           }
@@ -205,7 +205,7 @@
       }, 1000);
     }
 
-    // "Resim Çek" butonuna tıklanınca
+    // "Capture Image" butonuna tıklanınca
     captureButton.addEventListener('click', () => {
       // Canvas boyutunu video boyutuna ayarla
       canvas.width = video.videoWidth;
@@ -223,13 +223,13 @@
     });
 
     /****************************************************************
-     *  10 SANİYELİK COOLDOWN (“Yükle ve Sınıflandır” butonu)
+     *  10 SANİYELİK COOLDOWN (“Upload and Classify” butonu)
      ****************************************************************/
     function startUploadCooldown() {
       let cooldown = 10; // 10 saniye
-      const originalText = "Yükle ve Sınıflandır";
+      const originalText = "Upload and Classify";
 
-      // "Resim Çek" butonunu da devre dışı bırakalım
+      // "Capture Image" butonunu da devre dışı bırakalım
       captureButton.disabled = true;
 
       // Buton metnine (10s) gibi geri sayım gösteriyoruz
@@ -297,9 +297,9 @@
       }
     }
 
-    // "Yükle ve Sınıflandır" butonuna tıklanınca
+    // "Upload and Classify" butonuna tıklanınca
     uploadButton.addEventListener('click', () => {
-      loadingText.style.display = 'block';    // "İşlem Yapılıyor..." metnini göster
+      loadingText.style.display = 'block';    // "Processing..." metnini göster
       uploadButton.disabled = true;           // Butonu anında devre dışı bırak
       isUploadOnCooldown = true;             // Upload cooldown başlasın
 
@@ -318,7 +318,7 @@
         })
         .then(response => {
           if (!response.ok) {
-            throw new Error(`Sunucu hatası: ${response.statusText}`);
+            throw new Error(`Server error: ${response.statusText}`);
           }
           return response.json();
         })
@@ -327,16 +327,16 @@
 
           // Hata döndüyse
           if (data.error) {
-            alert('Hata: ' + data.error);
+            alert('Error: ' + data.error);
             return;
           }
 
-          // Backend’den dönen veriler
+          // Backend'den dönen veriler
           const predictedLabel = data.predicted_label;
           const outputImageData = data.output_image; // PNG base64
 
           // Tahmini yüz şeklini yaz
-          faceShapeText.textContent = `Yüz Şekli: ${predictedLabel}`;
+          faceShapeText.textContent = `Face Shape: ${predictedLabel}`;
 
           // İşlenmiş görseli (modelin ürettiği görsel) göster
           resultImage.src = "data:image/png;base64," + outputImageData;
@@ -355,7 +355,7 @@
 
             // Stil görseline tıklanınca yönlendirme
             imgEl.addEventListener('click', () => {
-              window.location.href = `onerilen.html?type=${predictedLabel}&style=${encodeURIComponent(styleObj.name)}`;
+              window.location.href = `recommended_styles.html?type=${predictedLabel}&style=${encodeURIComponent(styleObj.name)}`;
             });
 
             const nameEl = document.createElement("p");
@@ -371,8 +371,8 @@
         })
         .catch(error => {
           loadingText.style.display = 'none';
-          alert('İşleme sırasında bir hata oluştu: ' + error.message);
-          console.error('Hata:', error);
+          alert('An error occurred during processing: ' + error.message);
+          console.error('Error:', error);
         });
       }, "image/png");
     });

@@ -11,7 +11,7 @@ from joblib import load
 warnings.filterwarnings('ignore')
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
-data_path = r"C:\Users\duggy\OneDrive\Belgeler\Github\AIProject\FaceShape Dataset\pickles"
+data_path = "../FaceShape Dataset/pickles"
 X_train_rgb = load(os.path.join(data_path, 'X_train_rgb.joblib'))
 y_train_rgb = load(os.path.join(data_path, 'y_train_rgb.joblib'))
 X_test_rgb = load(os.path.join(data_path, 'X_test_rgb.joblib'))
@@ -39,14 +39,14 @@ for layer in base_model.layers:
     layer.trainable = False
 
 if os.path.exists(model_path):
-    print("Mevcut model bulunuyor. Model yükleniyor ve eğitime devam ediliyor...")
+    print("Existing model found. Loading model and continuing training...")
     model = load_model(model_path)
     for layer in base_model.layers:
         layer.trainable = False
     for layer in model.layers[:-2]:
         layer.trainable = False
 else:
-    print("Model bulunamadı. Yeni model oluşturuluyor...")
+    print("Model not found. Creating new model...")
     x = base_model.output
     x = Dense(1028, activation="relu")(x)
     x = Dropout(0.5)(x)
@@ -72,7 +72,7 @@ history = model.fit(
 )
 
 model.save(model_path)
-print(f"Model kaydedildi: {model_path}")
+print(f"Model saved: {model_path}")
 
 
 def plot_results(history, metric):

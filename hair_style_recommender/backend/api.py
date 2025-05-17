@@ -9,25 +9,21 @@ import base64
 import tensorflow as tf
 
 app = Flask(__name__)
-CORS(app)  # Tüm rotalar için CORS'u etkinleştirir
+CORS(app)
 
-# Klasörlerin Tanımlanması
-backend_dir = r"C:\Users\duggy\OneDrive\Belgeler\Github\AIProject\sac_onerisi\backend"
-input_folder = rf"{backend_dir}\input"
-output_folder = rf"{backend_dir}\output"
-model_path = r"C:\Users\duggy\OneDrive\Belgeler\Github\AIProject\model\face_shape_model_vgg16_rgb.h5"
+backend_dir = "../backend"
+input_folder = f"{backend_dir}/input"
+output_folder = f"{backend_dir}/output"
+model_path = "../../model/face_shape_model_vgg16_rgb.h5"
 
-# Etiket Haritası
 label_map = {0: 'Heart', 1: 'Oblong', 2: 'Oval', 3: 'Round', 4: 'Square'}
 
-# TensorFlow Graph ve Session Yönetimi
 graph = tf.get_default_graph()
 session = tf.Session()
 with graph.as_default():
     tf.keras.backend.set_session(session)
     model = load_model(model_path)
     detector = MTCNN()
-
 
 def crop_and_resize(image, target_w=224, target_h=224):
     if image.ndim == 2:
@@ -57,20 +53,16 @@ def crop_and_resize(image, target_w=224, target_h=224):
 
     return new_img
 
-
 def extract_face(img, detector, target_size=(224, 224)):
     with graph.as_default():
         tf.keras.backend.set_session(session)
         results = detector.detect_faces(img)
         if not results:
-            # Yüz bulunamadı, görseli kırp ve yeniden boyutlandır
             new_face = crop_and_resize(img, target_w=224, target_h=224)
         else:
-            # İlk bulunan yüz koordinatları
             x1, y1, width, height = results[0]['box']
             x2, y2 = x1 + width, y1 + height
 
-            # Bir miktar pay bırak
             adj_h = 10
             new_y1 = max(y1 - adj_h, 0)
             new_y2 = min(y1 + height + adj_h, img.shape[0])
@@ -85,13 +77,12 @@ def extract_face(img, detector, target_size=(224, 224)):
         sqr_img = cv2.resize(new_face, target_size)
         return sqr_img
 
-
 def predict_and_visualize(image_path, output_image_path):
     with graph.as_default():
         tf.keras.backend.set_session(session)
         img = cv2.imread(image_path)
         if img is None:
-            return False, None  # Görsel yüklenemedi
+            return False, None
 
         processed_img = extract_face(img, detector)
         rgb_img = cv2.cvtColor(processed_img, cv2.COLOR_BGR2RGB)
@@ -100,29 +91,26 @@ def predict_and_visualize(image_path, output_image_path):
 
         predictions = model.predict(input_img)
         predicted_class = np.argmax(predictions, axis=1)[0]
-        predicted_label = label_map.get(predicted_class, "Bilinmiyor")
+        predicted_label = label_map.get(predicted_class, "Unknown")
         confidence = predictions[0][predicted_class]
 
         classes = list(label_map.values())
         confidences = predictions[0]
 
-        # Tahmin sonuçlarını görselleştir
         plt.figure(figsize=(10, 5))
 
-        # Yüklenen Görsel ve Tahmin
         plt.subplot(1, 2, 1)
         plt.imshow(rgb_img)
-        plt.title(f"Tahmin: {predicted_label} ({confidence * 100:.2f}%)")
+        plt.title(f"Prediction: {predicted_label} ({confidence * 100:.2f}%)")
         plt.axis('off')
 
-        # Güven (probability) bar grafiği
         plt.subplot(1, 2, 2)
         bar_colors = ['gray'] * len(classes)
         bar_colors[predicted_class] = 'blue'
         plt.bar(classes, confidences * 100, color=bar_colors)
-        plt.xlabel('Yüz Şekli')
-        plt.ylabel('Özgüven (%)')
-        plt.title('Yüz Şekli Tahminleri')
+        plt.xlabel('Face Shape')
+        plt.ylabel('Confidence (%)')
+        plt.title('Face Shape Predictions')
         plt.ylim(0, 105)
         for i, v in enumerate(confidences * 100):
             plt.text(i, v + 1, f"{v:.2f}%", ha='center')
@@ -133,19 +121,17 @@ def predict_and_visualize(image_path, output_image_path):
 
         return True, predicted_label
 
-
 @app.route('/upload', methods=['POST'])
 def upload_image():
     if 'file' not in request.files:
-        return jsonify({"error": "Dosya bulunamadı"}), 400
+        return jsonify({"error": "No file found"}), 400
 
     file = request.files['file']
     if file.filename == '':
-        return jsonify({"error": "Hiçbir dosya seçilmedi"}), 400
+        return jsonify({"error": "No file selected"}), 400
 
     filename = file.filename
 
-    # Dosya adı ve uzantısını ayrıştır
     if '.' in filename:
         name, ext = filename.rsplit('.', 1)
         ext = '.' + ext.lower()
@@ -153,43 +139,36 @@ def upload_image():
         name = filename
         ext = ''
 
-    # Desteklenen formatlar
     if ext not in ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.tiff']:
-        return jsonify({"error": "Desteklenmeyen dosya türü"}), 400
+        return jsonify({"error": "Unsupported file type"}), 400
 
-    # Girdi/Çıktı yolları
     input_filename = f"{name}_input{ext}"
-    input_path = f"{input_folder}\\{input_filename}"
+    input_path = f"{input_folder}/{input_filename}"
     output_filename = f"{name}_output.png"
-    output_path = f"{output_folder}\\{output_filename}"
+    output_path = f"{output_folder}/{output_filename}"
 
-    # Dosyayı kaydet
     try:
         file.save(input_path)
     except Exception as e:
-        return jsonify({"error": f"Dosya kaydedilirken hata oluştu: {str(e)}"}), 500
+        return jsonify({"error": f"Error saving file: {str(e)}"}), 500
 
-    # Görseli işleyip modelle tahmin yap
     try:
         success, predicted_label = predict_and_visualize(input_path, output_path)
         if not success:
-            return jsonify({"error": "Görsel işlenemedi"}), 500
+            return jsonify({"error": "Image could not be processed"}), 500
     except Exception as e:
-        return jsonify({"error": f"Görsel işlenirken hata oluştu: {str(e)}"}), 500
+        return jsonify({"error": f"Error processing image: {str(e)}"}), 500
 
-    # Çıktı görselini base64 formatına dönüştür
     try:
         with open(output_path, "rb") as image_file:
             encoded_string = base64.b64encode(image_file.read()).decode('utf-8')
     except Exception as e:
-        return jsonify({"error": f"İşlenen görsel okunurken hata oluştu: {str(e)}"}), 500
+        return jsonify({"error": f"Error reading processed image: {str(e)}"}), 500
 
-    # Backend'den istemciye göndereceğimiz veriler
     return jsonify({
         "output_image": encoded_string,
         "predicted_label": predicted_label
     }), 200
-
 
 if __name__ == '__main__':
     app.run(debug=True)

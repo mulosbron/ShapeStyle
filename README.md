@@ -60,9 +60,9 @@ ShapeStyle/
 ## Screenshots
 
 ### System Workflow
-<img src="hair_style_recommoender/1.jpg" width="400" alt="Step 1: Capture Photo">
-<img src="hair_style_recommoender/2.jpg" width="400" alt="Step 2: Face Shape Prediction">
-<img src="hair_style_recommoender/3.jpg" width="400" alt="Step 3: Hairstyle Recommendations">
+<img src="hair_style_recommender/1.jpg" width="400" alt="Step 1: Capture Photo">
+<img src="hair_style_recommender/2.jpg" width="400" alt="Step 2: Face Shape Prediction">
+<img src="hair_style_recommender/3.jpg" width="400" alt="Step 3: Hairstyle Recommendations">
 
 ### Model Performance Visualizations
 <img src="model/evaluation_results/confusion_matrix_counts.png" width="400" alt="Confusion Matrix">
